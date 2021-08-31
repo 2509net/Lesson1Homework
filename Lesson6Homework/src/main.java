@@ -4,11 +4,15 @@ import client.OkHttpClient;
 import javax.print.attribute.standard.RequestingUserName;
 import java.io.IOException;
 import java.util.Objects;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-public class main {
+public class Main {
 
 
-    public static final String HOST = "dataservice.accuweather.com/forecasts/v1/daily/5day/";
+    public static final String HOST = "dataservice.accuweather.com";
     public static final String FORECAST_URL = "forecasts";
     public static final String DAILY_URL = "daily";
 public static final String FIVE_DAYS_URL = "5day";
@@ -41,9 +45,23 @@ public static final String METRIC = "true";
             .build();
 
     Response response = client.newCall(request).execute();
-    System.out.println(Objects.requireNonNull(response.body()).string());
+ObjectMapper objectMapper = new ObjectMapper();
+WeatherResponse weatherResponse = objectMapper.readValue(response.body().byteStream(), WeatherResponse.class);
+
+for (DailyForecast forecast : weatherResponse.getDailyForecasts()) {
+    System.out.println(
+            "Погода в Москве на %s\n" +
+                    "%s, температура от %1f до %.1f %s\n\n",
+            forecast.getData(),
+            forecast.getDay().getIconPhrase(),
+            forecast.getTemperature().getMinimum().getVaue(),
+            forecast.getTemperature().getMaximum().getVaue(),
+            forecast.getTemperature().getMinimum().getUnit();
 
 }
+
+    }
 }
+
 
 
