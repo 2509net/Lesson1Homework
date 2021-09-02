@@ -8,6 +8,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import repository.WeatherForecastRepository;
 
 public class Main {
 
@@ -47,8 +48,9 @@ public static final String METRIC = "true";
     Response response = client.newCall(request).execute();
 ObjectMapper objectMapper = new ObjectMapper();
 WeatherResponse weatherResponse = objectMapper.readValue(response.body().byteStream(), WeatherResponse.class);
+        WeatherForecastRepository repository = new WeatherWeatherForecastRepository();
 
-for (DailyForecast forecast : weatherResponse.getDailyForecasts()) {
+        for (DailyForecast forecast : weatherResponse.getDailyForecasts()) {
     System.out.println(
             "Погода в Москве на %s\n" +
                     "%s, температура от %1f до %.1f %s\n\n",
@@ -58,8 +60,14 @@ for (DailyForecast forecast : weatherResponse.getDailyForecasts()) {
             forecast.getTemperature().getMaximum().getVaue(),
             forecast.getTemperature().getMinimum().getUnit();
 
-}
+            repository.save(
+                    CITY_ID, forecast.getDate(),
+                    forecast.getDay().getIconPhrase(),
+                    forecast.getTemperature().getMaximum().getValue()
+            );
 
+}
+           repository.read();
     }
 }
 
